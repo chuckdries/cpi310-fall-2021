@@ -16,12 +16,16 @@ app.set("view engine", "handlebars");
 
 app.use(express.urlencoded());
 
-app.use('/static', express.static('./static'));
+app.use("/static", express.static("./static"));
 
 app.get("/", async function (req, res) {
   const db = await dbPromise;
   const messages = await db.all("SELECT * FROM Message;");
   res.render("home", { messages });
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
 });
 
 app.post("/message", async (req, res) => {
