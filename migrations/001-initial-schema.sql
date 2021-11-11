@@ -12,6 +12,13 @@ CREATE TABLE User (
   passwordHash STRING
 );
 
+CREATE TABLE AuthToken (
+  token STRING PRIMARY KEY,
+  userId INTEGER,
+  FOREIGN KEY(userId) REFERENCES User(id)
+)
+
 -- Down
 DROP TABLE Message;
 DROP TABLE User;
+DROP TABLE AuthToken;

@@ -6,6 +6,9 @@ import { open } from "sqlite";
 
 import bcrypt from "bcrypt";
 
+import cookieParser from "cookie-parser";
+import { v4 as uuidv4 } from "uuid";
+
 const saltRounds = 10;
 
 const dbPromise = open({
@@ -18,13 +21,34 @@ const app = express();
 app.engine("handlebars", exphbs());
 app.set("view engine", "handlebars");
 
+app.use(cookieParser());
 app.use(express.urlencoded());
 
 app.use("/static", express.static("./static"));
 
+const authMiddleware = async (req, res, next) => {
+  if (!req.cookies || !req.cookies.authToken) {
+    return next();
+  }
+  const db = await dbPromise;
+  const authToken = await db.get(
+    "SELECT * FROM AuthToken WHERE token = ?",
+    req.cookies.authToken
+  );
+  const user = await db.get(
+    "SELECT id, username FROM User WHERE id = ?",
+    authToken.userId
+  );
+  req.user = user;
+  next();
+};
+
+app.use(authMiddleware);
+
 app.get("/", async function (req, res) {
   const db = await dbPromise;
   const messages = await db.all("SELECT * FROM Message;");
+  console.log('user', req.user);
   res.render("home", { messages });
 });
 
@@ -91,6 +115,15 @@ app.post("/login", async (req, res) => {
     if (!passwordMatches) {
       return res.render("login", { error: "username or password incorrect" });
     }
+
+    const token = uuidv4();
+
+    await db.run(
+      "INSERT INTO AuthToken (token, userId) VALUES (?, ?);",
+      token,
+      user.id
+    );
+    res.cookie("authToken", token);
   } catch (e) {
     console.log(e);
     return res.render("login", { error: "something went wrong" });
@@ -101,6 +134,12 @@ app.post("/login", async (req, res) => {
 
 app.post("/message", async (req, res) => {
   console.log("body", req.body);
+  if (req.body.message && req.body.message.length > 500) {
+    return res.render("home", {
+      error: "messages must be less than 500 characters",
+    });
+  }
+
   const db = await dbPromise;
   await db.run("INSERT INTO Message (text) VALUES (?)", req.body.message);
   res.redirect("/");
