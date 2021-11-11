@@ -4,6 +4,10 @@ import exphbs from "express-handlebars";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
+import bcrypt from "bcrypt";
+
+const saltRounds = 10;
+
 const dbPromise = open({
   filename: "./databases/database.db",
   driver: sqlite3.Database,
@@ -26,6 +30,39 @@ app.get("/", async function (req, res) {
 
 app.get("/register", (req, res) => {
   res.render("register");
+});
+
+app.post("/register", async (req, res) => {
+  const { username, password, confirmPassword } = req.body;
+
+  if (!username || !password || !confirmPassword) {
+    return res.render("register", { error: "all fields are required" });
+  }
+  if (password !== confirmPassword) {
+    return res.render("register", { error: "passwords must match" });
+  }
+
+  const db = await dbPromise;
+
+  try {
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    console.log("passwordHash :", passwordHash);
+    await db.run(
+      "INSERT INTO User (username, passwordHash) VALUES (?, ?)",
+      username,
+      passwordHash
+    );
+  } catch (e) {
+    console.log(e);
+    if (
+      e.message === "SQLITE_CONSTRAINT: UNIQUE constraint failed: User.username"
+    ) {
+      return res.render("register", { error: "username already taken" });
+    }
+    return res.render("register", { error: "something went wrong" });
+  }
+
+  res.redirect("/");
 });
 
 app.post("/message", async (req, res) => {

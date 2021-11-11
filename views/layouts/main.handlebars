@@ -8,6 +8,11 @@
   <title>Our fun message board</title>
 </head>
 <body>
+  {{#if error}}
+  <div class="error-message">
+    {{error}}
+  </div>
+  {{/if}}
   {{{ body }}}
 </body>
 </html>
