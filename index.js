@@ -32,6 +32,10 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post("/register", async (req, res) => {
   const { username, password, confirmPassword } = req.body;
 
@@ -59,7 +63,37 @@ app.post("/register", async (req, res) => {
     ) {
       return res.render("register", { error: "username already taken" });
     }
+    console.log(e);
     return res.render("register", { error: "something went wrong" });
+  }
+
+  res.redirect("/");
+});
+
+app.post("/login", async (req, res) => {
+  const db = await dbPromise;
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.render("login", { error: "all field are required" });
+  }
+
+  try {
+    const user = await db.get(
+      "SELECT * FROM User WHERE username = ?",
+      username
+    );
+    if (!user) {
+      return res.render("login", { error: "username or password incorrect" });
+    }
+
+    const passwordMatches = await bcrypt.compare(password, user.passwordHash);
+    if (!passwordMatches) {
+      return res.render("login", { error: "username or password incorrect" });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.render("login", { error: "something went wrong" });
   }
 
   res.redirect("/");
