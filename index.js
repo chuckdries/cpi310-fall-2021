@@ -48,8 +48,8 @@ app.use(authMiddleware);
 app.get("/", async function (req, res) {
   const db = await dbPromise;
   const messages = await db.all("SELECT * FROM Message;");
-  console.log('user', req.user);
-  res.render("home", { messages });
+  console.log("user", req.user);
+  res.render("home", { messages, user: req.user });
 });
 
 app.get("/register", (req, res) => {
@@ -80,6 +80,20 @@ app.post("/register", async (req, res) => {
       username,
       passwordHash
     );
+
+    const createdUser = await db.get(
+      "SELECT * FROM User WHERE username = ?",
+      username
+    );
+
+    const token = uuidv4();
+
+    await db.run(
+      "INSERT INTO AuthToken (token, userId) VALUES (?, ?);",
+      token,
+      createdUser.id
+    );
+    res.cookie("authToken", token);
   } catch (e) {
     console.log(e);
     if (
@@ -133,7 +147,9 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/message", async (req, res) => {
-  console.log("body", req.body);
+  if (!req.user) {
+    return res.redirect('/')
+  }
   if (req.body.message && req.body.message.length > 500) {
     return res.render("home", {
       error: "messages must be less than 500 characters",
@@ -141,7 +157,11 @@ app.post("/message", async (req, res) => {
   }
 
   const db = await dbPromise;
-  await db.run("INSERT INTO Message (text) VALUES (?)", req.body.message);
+  await db.run(
+    "INSERT INTO Message (text, authorId) VALUES (?, ?)",
+    req.body.message,
+    req.user.id
+  );
   res.redirect("/");
 });
 
