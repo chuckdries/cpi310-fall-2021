@@ -2,15 +2,17 @@
 
 <ul>
   {{#each messages}}
-  <li>{{id}}: {{text}}</li>
+  <li><span class="message-bubble">{{author}}: {{text}}</span></li>
   {{/each}}
 </ul>
 
-<form action="/message" method="post">
+{{#if user}}
+<form id='message-form' action="/message" method="post">
   <label for="messageInput">message</label>
   <input id="messageInput" name="message" />
   <button type="submit">send</button>
 </form>
-
+{{else}}
 <a href="/login">login</a>
 <a href="/register">register</a>
+{{/if}}

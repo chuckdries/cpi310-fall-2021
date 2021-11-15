@@ -16,3 +16,36 @@ form {
   color: white;
   font-size: 2em;
 }
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+  margin: .8em 0;
+}
+.message-bubble {
+  display: inline-block;
+  background: rgb(123, 202, 255);
+  border-radius: 10px;
+  padding: .8em;
+}
+
+#message-form {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+#message-form input {
+  flex: auto;
+}
+#message-form button {
+  background-color: rgb(123, 202, 255);
+}
+#message-form input, #message-form button {
+  border-radius: 10px;
+  border: 1px solid rgb(0, 88, 160);
+  padding: .8em;
+}

@@ -35,6 +35,9 @@ const authMiddleware = async (req, res, next) => {
     "SELECT * FROM AuthToken WHERE token = ?",
     req.cookies.authToken
   );
+  if (!authToken) {
+    return next();
+  }
   const user = await db.get(
     "SELECT id, username FROM User WHERE id = ?",
     authToken.userId
@@ -47,12 +50,15 @@ app.use(authMiddleware);
 
 app.get("/", async function (req, res) {
   const db = await dbPromise;
-  const messages = await db.all("SELECT * FROM Message;");
-  console.log("user", req.user);
+  const messages = await db.all("SELECT Message.id, Message.text, User.username as author FROM Message LEFT JOIN User ON User.id = Message.authorId;");
+  console.log(messages);
   res.render("home", { messages, user: req.user });
 });
 
 app.get("/register", (req, res) => {
+  if (req.user) {
+    return res.redirect("/");
+  }
   res.render("register");
 });
 
@@ -61,6 +67,9 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  if (req.user) {
+    return res.redirect("/");
+  }
   const { username, password, confirmPassword } = req.body;
 
   if (!username || !password || !confirmPassword) {
@@ -148,7 +157,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/message", async (req, res) => {
   if (!req.user) {
-    return res.redirect('/')
+    return res.redirect("/");
   }
   if (req.body.message && req.body.message.length > 500) {
     return res.render("home", {
