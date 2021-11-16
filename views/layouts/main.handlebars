@@ -13,6 +13,7 @@
       </div>
     {{/if}}
     {{#if user}}
+    <div class='container'>
       <nav>
         <ul>
           <li><a href="/user/{{user.username}}">{{user.username}}</a></li>
@@ -22,6 +23,7 @@
           </div>
         </ul>
       </nav>
+    </div>
     {{/if}}
     {{{body}}}
   </body>

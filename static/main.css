@@ -6,6 +6,11 @@ body {
   color: #333;
   background: rgb(240, 244, 249);
 }
+.container {
+  max-width: 600px;
+  margin: auto;
+  position: relative;
+}
 
 form {
   margin-top: 1em;
@@ -59,8 +64,8 @@ li {
 
 nav {
   text-align: right;
-  /* position: fixed; */
-  /* right: 0; */
+  position: absolute;
+  right: 0;
   /* background: inherit; */
 }
 nav li {
