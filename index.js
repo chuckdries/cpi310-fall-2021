@@ -51,16 +51,12 @@ app.use(authMiddleware);
 app.get("/", async function (req, res) {
   const db = await dbPromise;
   const messages = await db.all(`
-    SELECT Message.id, Message.text, User.username as author, Message.authorId
+    SELECT Message.id, Message.text, User.username as author, Message.authorId,
+      IIF(Message.authorId = ?, 1, 0) isByMyself
     FROM Message
     LEFT JOIN User
     ON User.id = Message.authorId;
-  `);
-  for (const msg of messages) {
-    if (req.user && req.user.id === msg.authorId) {
-      msg.isByMyself = true
-    }
-  }
+  `, req.user ? req.user.id : null);
   console.log(messages);
   res.render("home", { messages, user: req.user });
 });
