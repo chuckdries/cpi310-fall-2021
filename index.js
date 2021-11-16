@@ -50,7 +50,12 @@ app.use(authMiddleware);
 
 app.get("/", async function (req, res) {
   const db = await dbPromise;
-  const messages = await db.all("SELECT Message.id, Message.text, User.username as author, Message.authorId FROM Message LEFT JOIN User ON User.id = Message.authorId;");
+  const messages = await db.all(`
+    SELECT Message.id, Message.text, User.username as author, Message.authorId
+    FROM Message
+    LEFT JOIN User
+    ON User.id = Message.authorId;
+  `);
   for (const msg of messages) {
     if (req.user && req.user.id === msg.authorId) {
       msg.isByMyself = true
