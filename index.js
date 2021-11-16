@@ -174,6 +174,16 @@ app.post("/message", async (req, res) => {
   res.redirect("/");
 });
 
+app.get('/user/:username', async (req, res) => {
+  const db = await dbPromise;
+  const user = await db.get("SELECT id, username FROM User WHERE username=?", req.params.username)
+  if (!user) {
+    return res.send('user not found');
+  }
+  const messages = await db.all("SELECT Message.id, Message.text, User.username as author FROM Message LEFT JOIN User ON User.id = Message.authorId WHERE authorId=?;", user.id)
+  res.render("profile", { username: req.params.username, messages })
+})
+
 const setup = async () => {
   const db = await dbPromise;
   db.migrate({ force: false });
