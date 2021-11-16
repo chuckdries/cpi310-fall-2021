@@ -116,7 +116,6 @@ app.post("/register", async (req, res) => {
     ) {
       return res.render("register", { error: "username already taken" });
     }
-    console.log(e);
     return res.render("register", { error: "something went wrong" });
   }
 
