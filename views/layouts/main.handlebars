@@ -1,18 +1,28 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/main.css">
-  <title>Our fun message board</title>
-</head>
-<body>
-  {{#if error}}
-  <div class="error-message">
-    {{error}}
-  </div>
-  {{/if}}
-  {{{ body }}}
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/main.css" />
+    <title>Our fun message board</title>
+  </head>
+  <body>
+    {{#if error}}
+      <div class="error-message">
+        {{error}}
+      </div>
+    {{/if}}
+    {{#if user}}
+      <nav>
+        <ul>
+          <li><a href="/user/{{user.username}}">{{user.username}}</a></li>
+          <div>
+            <li><a href="/">Home</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </div>
+        </ul>
+      </nav>
+    {{/if}}
+    {{{body}}}
+  </body>
 </html>

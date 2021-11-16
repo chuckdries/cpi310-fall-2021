@@ -56,3 +56,22 @@ li {
   border: 1px solid rgb(0, 88, 160);
   padding: .8em;
 }
+
+nav {
+  text-align: right;
+  /* position: fixed; */
+  /* right: 0; */
+  /* background: inherit; */
+}
+nav li {
+  margin: 0;
+}
+nav ul div{
+  display: none;
+}
+nav:hover ul div {
+  display: block;
+}
+h1 {
+  /* padding-top: 70px; */
+}

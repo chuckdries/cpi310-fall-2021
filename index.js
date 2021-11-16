@@ -191,7 +191,7 @@ app.get('/user/:username', async (req, res) => {
     return res.send('user not found');
   }
   const messages = await db.all("SELECT Message.id, Message.text, User.username as author FROM Message LEFT JOIN User ON User.id = Message.authorId WHERE authorId=?;", user.id)
-  res.render("profile", { username: req.params.username, messages })
+  res.render("profile", { username: req.params.username, messages, user: req.user })
 })
 
 const setup = async () => {
