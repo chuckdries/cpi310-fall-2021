@@ -2,9 +2,11 @@
 
 <ul>
   {{#each messages}}
-  <li><span class="message-bubble">
-    <a href="/user/{{author}}">{{author}}</a>": {{text}}
-  </span></li>
+  <li {{#if isByMyself}}class="li-right"{{/if}}>
+    <span class="message-bubble {{#if isByMyself}}self-bubble{{/if}}">
+      <a href="/user/{{author}}">{{author}}</a>: {{text}}
+    </span>
+  </li>
   {{/each}}
 </ul>
 

@@ -26,11 +26,18 @@ li {
   list-style-type: none;
   margin: .8em 0;
 }
+.li-right {
+  text-align: right;
+}
 .message-bubble {
   display: inline-block;
-  background: rgb(123, 202, 255);
+  background: white;
   border-radius: 10px;
   padding: .8em;
+}
+.self-bubble {
+  text-align: right;
+  background: rgb(123, 202, 255);
 }
 
 #message-form {
